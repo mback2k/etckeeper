@@ -58,6 +58,42 @@ endif
 clean: etckeeper.spec etckeeper.version
 	rm -rf build
 
+uninstall:
+	rm -rf $(DESTDIR)$(etcdir)/etckeeper/
+	rm -rf $(DESTDIR)$(vardir)/cache/etckeeper/
+	rm -f $(DESTDIR)$(bindir)/etckeeper
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(bindir)
+	rm -f $(DESTDIR)$(mandir)/man8/etckeeper.8
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(mandir)/man8
+	rm -f $(DESTDIR)$(etcdir)/bash_completion.d/etckeeper
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(etcdir)/bash_completion.d
+ifeq ($(HIGHLEVEL_PACKAGE_MANAGER),apt)
+	rm -f $(DESTDIR)$(etcdir)/apt/apt.conf.d/05etckeeper
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(etcdir)/apt/apt.conf.d
+	rm -f $(DESTDIR)$(etcdir)/cruft/filters-unex/etckeeper
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(etcdir)/cruft/filters-unex
+endif
+ifeq ($(LOWLEVEL_PACKAGE_MANAGER),pacman-g2)
+	rm -f $(DESTDIR)$(etcdir)/pacman-g2/hooks/etckeeper
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(etcdir)/pacman-g2/hooks
+endif
+ifeq ($(HIGHLEVEL_PACKAGE_MANAGER),yum)
+	rm -f $(DESTDIR)$(prefix)/lib/yum-plugins/etckeeper.py
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(prefix)/lib/yum-plugins
+	rm -f $(DESTDIR)$(etcdir)/yum/pluginconf.d/etckeeper.conf
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(etcdir)/yum/pluginconf.d
+endif
+ifeq ($(HIGHLEVEL_PACKAGE_MANAGER),dnf)
+	echo "** DNF support must be manually uninstalled"
+endif
+ifeq ($(HIGHLEVEL_PACKAGE_MANAGER),zypper)
+	rm -f $(DESTDIR)$(prefix)/lib/zypp/plugins/commit/zypper-etckeeper.py
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(prefix)/lib/zypp/plugins/commit
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(prefix)/lib/zypp/plugins
+endif
+	echo "** bzr support must be manually uninstalled"
+	echo "** partial uninstallation successful"
+
 etckeeper.spec:
 	sed -i~ "s/Version:.*/Version: $$(perl -e '$$_=<>;print m/\((.*?)\)/'<debian/changelog)/" etckeeper.spec
 	rm -f etckeeper.spec~
